@@ -1,26 +1,26 @@
 /*
     Ultrasonic sensor 1 pins (S1):
         VCC: +5VDC
-        Trig : Trigger (INPUT) - Pin 3
-        Echo: Echo (OUTPUT) - Pin 4
+        Trig : Trigger (INPUT) - Pin 9
+        Echo: Echo (OUTPUT) - Pin 8
         GND: GND
 
     Ultrasonic sensor 2 pins (S2):
         VCC: +5VDC
-        Trig : Trigger (INPUT) - Pin 6
-        Echo: Echo (OUTPUT) - Pin 7
+        Trig : Trigger (INPUT) - Pin 11
+        Echo: Echo (OUTPUT) - Pin 12
         GND: GND
 */
 
 // Sensor 1
-int trigPinS1 = 3;    // Trig
-int echoPinS1 = 4;    // Echo
+int trigPinS1 = 9;    // Trig
+int echoPinS1 = 8;    // Echo
 long durationS1;
 long distanceS1;
 
 // Sensor 2
-int trigPinS2 = 6;    // Trig
-int echoPinS2 = 7;    // Echo
+int trigPinS2 = 11;    // Trig
+int echoPinS2 = 12;    // Echo
 long durationS2;
 long distanceS2;
 
