@@ -65,14 +65,14 @@ byte leds = 0;
 int triggerDistance = 25;
 int triggeredS1 = 0;
 int triggeredS2 = 0;
-int currentIn = 0;
-int initialIn = 8;
+int currentIn = 5;
+int initialIn = 5;
 int goingIn = 0;
 int goingOut = 0;
 int passed = 1;
 String message = "Raum frei";
 int warning = 5;
-int roomCapacity = 50;
+int roomCapacity = 25;
 
 
 // --- SETUP --------------------------------------------------------
@@ -88,7 +88,7 @@ void setup() {
   delay(10);
 
   Blynk.begin(auth, ssid, pass, "192.168.1.101", 8080);
-
+  Blynk.setProperty(V1, "max", roomCapacity);
   Blynk.virtualWrite(V0, initialIn);
   Blynk.virtualWrite(V1, initialIn);
 
@@ -188,7 +188,7 @@ void loop() {
               currentIn--;
           }
 
-          checkCapacity()
+          checkCapacity();
 
         //   if(currentIn >= 0) {
         //     Blynk.virtualWrite(V0, currentIn);
@@ -260,7 +260,7 @@ void updateLeds(int value){
     bitSet(leds, i);
     updateShiftRegister();
   }
-  delay(500);
+  //delay(500);
 }
 
 //to prevent wrong values
