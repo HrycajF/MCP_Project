@@ -98,7 +98,7 @@ void setup() {
   pinMode(trigPinS2, OUTPUT);
   pinMode(echoPinS2, INPUT);
   pinMode(latchPin, OUTPUT);
-  pinMode(dataPin, OUTPUT);  
+  pinMode(dataPin, OUTPUT);
   pinMode(clockPin, OUTPUT);
 }
 // --- END OF SETUP -------------------------------------------------
@@ -176,7 +176,7 @@ void loop() {
               triggeredS1 = 0;
               triggeredS2 = 0;
               goingIn = 0;
-              passed = 1;              
+              passed = 1;
               currentIn++;
           }
 
@@ -188,13 +188,15 @@ void loop() {
               currentIn--;
           }
 
-          if(currentIn >= 0) {
-            Blynk.virtualWrite(V0, currentIn);
-            Blynk.virtualWrite(V1, currentIn);
-            Blynk.virtualWrite(V2,message);
-          } else {
-            currentIn = 0;
-          }
+          checkCapacity()
+
+        //   if(currentIn >= 0) {
+        //     Blynk.virtualWrite(V0, currentIn);
+        //     Blynk.virtualWrite(V1, currentIn);
+        //     Blynk.virtualWrite(V2,message);
+        //   } else {
+        //     currentIn = 0;
+        //   }
       }
   }
 
@@ -212,7 +214,6 @@ void loop() {
 }
 
 // --- END OF LOOP --------------------------------------------------
-
 
 // The sensor is triggered by a HIGH pulse of 10 or more microseconds.
 // Give a short LOW pulse beforehand to ensure a clean HIGH pulse:
@@ -236,6 +237,13 @@ long calculateDistance(long duration) {
     return (duration/2) / 29.1;
 }
 
+void updateShiftRegister()
+{
+   digitalWrite(latchPin, LOW);
+   shiftOut(dataPin, clockPin, MSBFIRST, leds);
+   digitalWrite(latchPin, HIGH);
+}
+
 void updateLeds(int value){
   leds = 0;
   updateShiftRegister();
@@ -246,31 +254,23 @@ void updateLeds(int value){
   else if(value < 0){
     value = 0;
   }
-  
+
   for (int i = 0; i < value; i++)
   {
     bitSet(leds, i);
     updateShiftRegister();
   }
   delay(500);
-  
-}
-
-void updateShiftRegister()
-{
-   digitalWrite(latchPin, LOW);
-   shiftOut(dataPin, clockPin, MSBFIRST, leds);
-   digitalWrite(latchPin, HIGH);
 }
 
 //to prevent wrong values
 void checkCapacity(){
-
   if(currentIn > roomCapacity){
     Blynk.setProperty(V0, "color", BLYNK_RED);
     Blynk.setProperty(V1, "color", BLYNK_RED);
     message = "Raum überfüllt!";
     updateLeds(8);
+    sendCurrentIn();
   }
   else if(currentIn > (roomCapacity-warning)){
     Blynk.setProperty(V0, "color", BLYNK_YELLOW);
@@ -278,16 +278,24 @@ void checkCapacity(){
     message = "Raum fast voll!";
     int value = (currentIn*1.0/roomCapacity*1.0)*8;
     updateLeds(value);
+    sendCurrentIn();
   }
   else if(currentIn < 0){
-    currentIn = 0; 
-    updateLeds(0);   
+    currentIn = 0;
+    updateLeds(0);
   }
   else{
     Blynk.setProperty(V0, "color", BLYNK_GREEN);
-    Blynk.setProperty(V1, "color", BLYNK_GREEN);  
+    Blynk.setProperty(V1, "color", BLYNK_GREEN);
     message = "Raum noch nicht voll";
     int value = (currentIn*1.0/roomCapacity*1.0)*8;
     updateLeds(value);
-  } 
+    sendCurrentIn();
+  }
+}
+
+void sendCurrentIn() {
+    Blynk.virtualWrite(V0, currentIn);
+    Blynk.virtualWrite(V1, currentIn);
+    Blynk.virtualWrite(V2, message);
 }
